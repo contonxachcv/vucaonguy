@@ -578,6 +578,19 @@
             text-align: right;
             z-index: 5;
         }
+
+        /* Fullscreen mode styles */
+        body:fullscreen {
+            background-color: #fae1dd;
+        }
+
+        body:-webkit-full-screen {
+            background-color: #fae1dd;
+        }
+
+        body:-moz-full-screen {
+            background-color: #fae1dd;
+        }
     </style>
 </head>
 
@@ -949,6 +962,37 @@
         [135, 132, 170, 190, .25, 2.5, .75],
         [135, 132, 320, 315, .2, 5, .3, 'sub']
         ].forEach((o) => CreateMagicDust(...o));
+
+        // ==================== Fullscreen API - Auto Fullscreen ====================
+        
+        // Function to enter fullscreen
+        function enterFullscreen(element) {
+            if (element.requestFullscreen) {
+                element.requestFullscreen().catch(err => {
+                    console.log('Fullscreen request failed:', err);
+                });
+            } else if (element.webkitRequestFullscreen) {
+                element.webkitRequestFullscreen();
+            } else if (element.mozRequestFullScreen) {
+                element.mozRequestFullScreen();
+            } else if (element.msRequestFullscreen) {
+                element.msRequestFullscreen();
+            }
+        }
+
+        // Auto-activate fullscreen when page loads
+        window.addEventListener('load', function() {
+            // Delay slightly to ensure DOM is fully ready
+            setTimeout(function() {
+                enterFullscreen(document.documentElement);
+            }, 500);
+        });
+
+        // Alternative: Try to activate on first user interaction if autoplay fails
+        document.addEventListener('click', function activateFullscreen() {
+            enterFullscreen(document.documentElement);
+            document.removeEventListener('click', activateFullscreen);
+        }, { once: true });
     </script>
 </body>
 
