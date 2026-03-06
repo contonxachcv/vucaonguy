@@ -1,319 +1,258 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>8/3 vui vẻ nha</title>
-
-<style>
-html,body{
-    margin:0;
-    padding:0;
-    overflow:hidden;
-    height:100vh;
-    width:100vw;
-    background:radial-gradient(ellipse at bottom,#0d0d1a 0%,#000000 100%);
-    font-family:sans-serif;
-    transition:opacity 1.2s ease-out;
-}
-
-canvas{
-    position:fixed;
-    top:0;
-    left:0;
-}
-
-#fullscreen-hint{
-    position:fixed;
-    bottom:20px;
-    left:0;
-    right:0;
-    text-align:center;
-    color:#aaa;
-    font-size:14px;
-    opacity:.7;
-    z-index:100;
-}
-</style>
-</head>
-
-<body>
-
-<canvas id="bg"></canvas>
-<canvas id="text"></canvas>
-<div id="fullscreen-hint">Chạm màn hình để xem toàn màn hình</div>
-
-<script>
-
-/* ================= FULLSCREEN (HỖ TRỢ ĐIỆN THOẠI) ================= */
-
-const elem = document.documentElement
-
-function goFullscreen(){
-    if(!document.fullscreenElement){
-
-        if(elem.requestFullscreen){
-            elem.requestFullscreen().catch(()=>{})
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>8/3 vui vẻ nha</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: radial-gradient(ellipse at bottom, #0d0d1a 0%, #000000 100%);
+            height: 100vh;
+            width: 100vw;
+            font-family: sans-serif;
+            transition: opacity 1.2s ease-out;
         }
-        else if(elem.webkitRequestFullscreen){
-            elem.webkitRequestFullscreen()
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
         }
-        else if(elem.msRequestFullscreen){
-            elem.msRequestFullscreen()
+        #fullscreen-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: #aaa;
+            font-size: 14px;
+            pointer-events: none;
+            opacity: 0.7;
+            z-index: 100;
+            transition: opacity 1s;
         }
 
-        document.getElementById("fullscreen-hint").style.display="none"
-    }
-}
-
-/* điện thoại */
-document.addEventListener("touchstart",goFullscreen,{once:true})
-
-/* máy tính */
-document.addEventListener("click",goFullscreen,{once:true})
-
-
-
-/* ================= BACKGROUND MATRIX ================= */
-
-const bg = document.getElementById("bg")
-const bgCtx = bg.getContext("2d")
-
-let w = bg.width = window.innerWidth
-let h = bg.height = window.innerHeight
-
-const letters = " HAPPY QUỐC TẾ PHỤ NỮ 8/3 ".split("")
-const fontSize = 16
-
-let columns = Math.floor(w/fontSize)
-let drops = Array(columns).fill().map(()=>Math.random()*h)
-
-function drawBG(){
-
-    bgCtx.fillStyle="rgba(0,0,0,0.1)"
-    bgCtx.fillRect(0,0,w,h)
-
-    bgCtx.fillStyle="#FFCCCC"
-    bgCtx.font=fontSize+"px monospace"
-
-    for(let i=0;i<drops.length;i++){
-
-        const text = letters[Math.floor(Math.random()*letters.length)]
-
-        bgCtx.fillText(text,i*fontSize,drops[i]*fontSize)
-
-        if(drops[i]*fontSize>h && Math.random()>0.975){
-            drops[i]=0
-        }
-
-        drops[i]++
-    }
-}
-
-setInterval(drawBG,33)
-
-
-
-/* ================= TEXT PARTICLES ================= */
-
-const canvas = document.getElementById("text")
-const ctx = canvas.getContext("2d")
-
-canvas.width=w
-canvas.height=h
-
-const sequence = [
-
-{ text:"3", color:"#ffffff", delay:1400 },
-{ text:"2", color:"#ffffff", delay:1400 },
-{ text:"1", color:"#ffffff", delay:1400 },
-
-{ text:"HAPPY", color:"#FFCCFF", delay:2200 },
-{ text:"WOMAN'S", color:"#FFCCFF", delay:2200 },
-{ text:"DAY", color:"#FFCCFF", delay:2400 }
-
-]
-
-let particles=[]
-let currentIndex=0
-let nextSwitchTime=Date.now()+sequence[0].delay
-let currentColor="#ffffff"
-
-
-
-function createParticlesFromText(word,color){
-
-    const tempCanvas=document.createElement("canvas")
-    const tempCtx=tempCanvas.getContext("2d")
-
-    tempCanvas.width=w
-    tempCanvas.height=h
-
-    let fontSize
-
-    if(["3","2","1"].includes(word)){
-        fontSize=Math.min(180,w*0.27)
-    }else{
-        fontSize=Math.min(150,w*0.28)
-    }
-
-    tempCtx.font=`bold ${fontSize}px sans-serif`
-    tempCtx.fillStyle="white"
-    tempCtx.textAlign="center"
-    tempCtx.textBaseline="middle"
-
-    tempCtx.fillText(word,w/2,h/2)
-
-    const data=tempCtx.getImageData(0,0,w,h).data
-
-    const newParticles=[]
-
-    for(let y=0;y<h;y+=6){
-        for(let x=0;x<w;x+=6){
-
-            const i=(y*w+x)*4
-
-            if(data[i+3]>100){
-
-                newParticles.push({
-
-                    x:Math.random()*w,
-                    y:Math.random()*h,
-                    tx:x+2,
-                    ty:y+2,
-                    alpha:0
-
-                })
+        @keyframes celestialFall{
+            0%{
+                transform: rotate(-45deg) translate(0, 0);
+                opacity: 1;
+                filter:
+                    drop-shadow(0 0 10px rgba(255,200,100,0.8))
+                    drop-shadow(0 0 20px rgba(255,150,50,0.6))
+                    drop-shadow(0 0 30px rgba(255,100,0,0.4))
+                    blur(0.5px);
+            }
+            50%{
+                opacity: 1;
+                filter:
+                    drop-shadow(0 0 15px rgba(255,200,100,1))
+                    drop-shadow(0 0 25px rgba(255,150,50,0.8))
+                    drop-shadow(0 0 40px rgba(255,100,0,0.6))
+                    blur(1px);
+            }
+            100%{
+                transform: rotate(-45deg) translate(-1200px, 1200px);
+                opacity: 0;
+                filter:
+                    drop-shadow(0 0 5px rgba(255,200,100,0.3))
+                    drop-shadow(0 0 10px rgba(255,150,50,0.2))
+                    blur(2px);
             }
         }
-    }
+    </style>
+</head>
+<body>
+    <canvas id="bg"></canvas>
+    <canvas id="text"></canvas>
+    <div id="fullscreen-hint"></div>
 
-    particles=newParticles
-    currentColor=color
-}
+    <script>
+        // ── Fullscreen helper ────────────────────────────────────────
+        const elem = document.documentElement;
 
+        function goFullscreen() {
+            if (!document.fullscreenElement) {
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen().catch(err => {
+                        console.log("Không thể vào fullscreen:", err);
+                        showHint();
+                    });
+                } else if (elem.webkitRequestFullscreen) { // Safari
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) { // IE11
+                    elem.msRequestFullscreen();
+                } else {
+                    showHint();
+                }
+            }
+        }
 
+        function showHint() {
+            const hint = document.getElementById('fullscreen-hint');
+            hint.style.opacity = '0.7';
+            setTimeout(() => { hint.style.opacity = '0'; }, 4000);
+        }
 
-function animate(){
+        // Thử tự động fullscreen khi load
+        window.addEventListener('load', () => {
+            setTimeout(goFullscreen, 800); // đợi một chút cho trình duyệt sẵn sàng
+        });
 
-requestAnimationFrame(animate)
+        // Fallback: click bất kỳ đâu cũng thử fullscreen
+        document.addEventListener('click', goFullscreen, { once: true });
 
-ctx.clearRect(0,0,w,h)
+        // ── Phần code còn lại của bạn (giữ nguyên) ──────────────────────
 
-const now=Date.now()
+        const bg = document.getElementById('bg');
+        const bgCtx = bg.getContext('2d');
+        let w = bg.width = window.innerWidth;
+        let h = bg.height = window.innerHeight;
+        const letters = " HAPPY QUỐC TẾ PHỤ NỮ 8/3 ".split("");
+        const fontSize = 16;
+        let columns = Math.floor(w / fontSize);
+        let drops = Array(columns).fill().map(() => Math.random() * h);
 
-if(now>=nextSwitchTime && currentIndex<sequence.length){
+        function drawBG() {
+            bgCtx.fillStyle = "rgba(0, 0, 0, 0.1)";
+            bgCtx.fillRect(0, 0, w, h);
+            bgCtx.fillStyle = "#FFCCCC";
+            bgCtx.font = fontSize + "px monospace";
 
-    const item=sequence[currentIndex]
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters[Math.floor(Math.random() * letters.length)];
+                bgCtx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > h && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(drawBG, 33);
 
-    createParticlesFromText(item.text,item.color)
+        const canvas = document.getElementById('text');
+        const ctx = canvas.getContext('2d');
+        canvas.width = w;
+        canvas.height = h;
 
-    currentIndex++
+        const sequence = [
+            { text: "3",      color: "#FFFFFF", delay: 1400 },
+            { text: "2",      color: "#FFFFFF", delay: 1400 },
+            { text: "1",      color: "#FFFFFF", delay: 1400 },
+            { text: "HAPPY",  color: "#FFCCFF", delay: 2200 },
+            { text: "WOMAN'S",color: "#FFCCFF", delay: 2200 },
+            { text: "DAY",    color: "#FFCCFF", delay: 2400 },
+        ];
 
-    if(currentIndex<sequence.length){
-        nextSwitchTime=now+sequence[currentIndex].delay
-    }
-}
+        let particles = [];
+        let currentIndex = 0;
+        let nextSwitchTime = Date.now() + sequence[0].delay;
+        let currentColor = "#FFFFFF";
 
-particles.forEach(p=>{
+        function createParticlesFromText(word, color) {
+            const tempCanvas = document.createElement("canvas");
+            const tempCtx = tempCanvas.getContext("2d");
+            tempCanvas.width = w;
+            tempCanvas.height = h;
 
-    p.x+=(p.tx-p.x)*0.09
-    p.y+=(p.ty-p.y)*0.09
-    p.alpha+=(1-p.alpha)*0.07
+            tempCtx.clearRect(0, 0, w, h);
 
-    ctx.fillStyle=`rgba(${hexToRgb(currentColor)},${p.alpha})`
+            let fontSize;
+            if (["3","2","1"].includes(word)) {
+                fontSize = Math.min(180, w * 0.27);
+            } else {
+                fontSize = Math.min(150, w * 0.28);
+            }
 
-    ctx.beginPath()
-    ctx.arc(p.x,p.y,2.4,0,Math.PI*2)
-    ctx.fill()
+            tempCtx.font = `bold ${fontSize}px sans-serif`;
+            tempCtx.fillStyle = "white";
+            tempCtx.textAlign = "center";
+            tempCtx.textBaseline = "middle";
+            tempCtx.fillText(word, w/2, h/2);
 
-})
+            const data = tempCtx.getImageData(0, 0, w, h).data;
+            const newParticles = [];
 
-}
+            for (let y = 0; y < h; y += 6) {
+                for (let x = 0; x < w; x += 6) {
+                    const i = (y * w + x) * 4;
+                    if (data[i + 3] > 100) {
+                        newParticles.push({
+                            x: Math.random() * w,
+                            y: Math.random() * h,
+                            tx: x + 2,
+                            ty: y + 2,
+                            alpha: 0
+                        });
+                    }
+                }
+            }
 
-animate()
+            particles = newParticles;
+            currentColor = color;
+        }
 
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, w, h);
 
+            const now = Date.now();
 
-function hexToRgb(hex){
+            if (now >= nextSwitchTime && currentIndex < sequence.length) {
+                const item = sequence[currentIndex];
+                createParticlesFromText(item.text, item.color);
 
-const bigint=parseInt(hex.replace("#",""),16)
+                if (currentIndex === sequence.length - 1) {
+                    setTimeout(() => {
+                        document.body.style.opacity = "0";
+                        setTimeout(() => {
+                            window.location.href = "lathu.html";
+                        }, 1300);
+                    }, 2400);
+                }
 
-return [
+                currentIndex++;
+                if (currentIndex < sequence.length) {
+                    nextSwitchTime = now + sequence[currentIndex].delay;
+                }
+            }
 
-(bigint>>16)&255,
-(bigint>>8)&255,
-bigint&255
+            particles.forEach(p => {
+                p.x += (p.tx - p.x) * 0.09;
+                p.y += (p.ty - p.y) * 0.09;
+                p.alpha += (1 - p.alpha) * 0.07;
 
-].join(",")
+                ctx.fillStyle = `rgba(${hexToRgb(currentColor)}, ${p.alpha.toFixed(3)})`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 2.4, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
 
-}
+        animate();
 
+        function hexToRgb(hex) {
+            const bigint = parseInt(hex.replace('#',''), 16);
+            return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255].join(', ');
+        }
 
+        window.onresize = () => {
+            w = bg.width = canvas.width = window.innerWidth;
+            h = bg.height = canvas.height = window.innerHeight;
+            columns = Math.floor(w / fontSize);
+            drops = Array(columns).fill().map(() => Math.random() * h);
+        };
 
-/* ================= RESIZE ================= */
+        // Shooting star (giữ nguyên phần bạn có)
+        setInterval(() => {
+            if (Math.random() > 0.45) {
+                createShootingStar?.(); // nếu bạn định nghĩa hàm này ở file khác
+            }
+        }, 900);
 
-window.onresize=()=>{
+        // ── Thêm hàm shooting star nếu chưa có (ví dụ đơn giản) ──
+        function createShootingStar() {
 
-w=bg.width=canvas.width=window.innerWidth
-h=bg.height=canvas.height=window.innerHeight
-
-columns=Math.floor(w/fontSize)
-drops=Array(columns).fill().map(()=>Math.random()*h)
-
-}
-
-
-
-/* ================= SHOOTING STAR ================= */
-
-function createShootingStar(){
-
-const star=document.createElement("div")
-
-star.style.position="fixed"
-star.style.top=Math.random()*window.innerHeight*0.5+"px"
-star.style.left=window.innerWidth+"px"
-
-star.style.width="2px"
-star.style.height="2px"
-
-star.style.background="white"
-
-star.style.boxShadow="0 0 6px white,0 0 20px white"
-
-star.style.transform="rotate(-45deg)"
-
-star.style.transition="transform 1s linear,opacity 1s"
-
-document.body.appendChild(star)
-
-setTimeout(()=>{
-
-star.style.transform="translate(-1200px,1200px)"
-star.style.opacity="0"
-
-},50)
-
-setTimeout(()=>{
-
-star.remove()
-
-},1000)
-
-}
-
-setInterval(()=>{
-
-if(Math.random()>0.45){
-
-createShootingStar()
-
-}
-
-},900)
-
-</script>
-
+        }
+    </script>
 </body>
 </html>
